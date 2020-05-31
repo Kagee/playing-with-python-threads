@@ -16,7 +16,7 @@ class EnqueueHandler(BaseHTTPRequestHandler):
         self.end_headers()
         logging.info("enqueueing job")
         jobs.put(("webjob", random.randint(1,9)))
-        self.wfile.write("Hello world")
+        self.wfile.write("Hello world".encode('utf-8'))
         return
 
 def serial(name):
@@ -38,6 +38,7 @@ def webserver(handler_class):
         logging.info("starting to handle request")
         httpd.handle_request()
         logging.info("finished handling request")
+    logging.info("shutdown complete")
 
 
 if __name__ == "__main__":
@@ -49,7 +50,7 @@ if __name__ == "__main__":
     jobs = Queue()
     shutdown_recieved = Event()
     s = threading.Thread(target=serial, args=(1,))
-    w = threading.Thread(target=webserver, args=(EnqueueHandler))
+    w = threading.Thread(target=webserver, args=(EnqueueHandler,))
     s.start()
     w.start()
     try:
